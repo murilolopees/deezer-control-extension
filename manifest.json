@@ -1,0 +1,25 @@
+{
+    "manifest_version": 2,
+    "name": "Deezer control extension",
+    "version": "0.1",
+    "content_scripts": [
+        {
+          "matches": [
+            "<all_urls>"
+          ],
+          "js": ["main.js"],
+          "run_at": "document_end",
+          "all_frames": true
+        }
+    ],
+    "background": {
+      "scripts": ["background.js"],
+      "persistent": false
+    },
+    "web_accessible_resources": [
+      "scripts/observer.js"
+    ],
+    "permissions": [
+      "*://*.deezer.com/"
+    ]
+}
