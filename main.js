@@ -3,8 +3,20 @@ function ready() {
 		return;
     }
 
+    let buffer = [];
+
     document.addEventListener('keydown', function(event) {
-        chrome.runtime.sendMessage({ type: 'keydown', keyCode: event.keyCode, ctrlKey: event.ctrlKey });
+        if (!buffer.includes(event.keyCode)) {
+            buffer.push(event.keyCode);
+        }
+
+        chrome.runtime.sendMessage({ type: 'keydown', bufferKeys: buffer });
+    });
+
+    document.addEventListener('keyup', function(event) {
+        buffer = buffer.filter(function(val) {
+            return val != event.keyCode;
+        });
     });
 
     loadObserver();

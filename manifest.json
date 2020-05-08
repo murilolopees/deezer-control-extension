@@ -20,6 +20,11 @@
       "scripts/observer.js"
     ],
     "permissions": [
-      "*://*.deezer.com/"
-    ]
+      "*://*.deezer.com/",
+      "storage"
+    ],
+    "browser_action": {
+      "default_popup": "popup/popup.html",
+      "default_title": "Deezer control configuration"
+    }
 }

@@ -1,6 +1,6 @@
-const NEXT_SONG = 'next-song';
-const PREVIOUS_SONG = 'previous-song';
-const PAUSE_PLAY = 'pause-play';
+const NEXT_SONG = 'nextSong';
+const PREVIOUS_SONG = 'previousSong';
+const PLAY_PAUSE = 'playPause';
 
 window.addEventListener('message', function(ev) {
     if (typeof dzPlayer === 'undefined') {
@@ -8,7 +8,7 @@ window.addEventListener('message', function(ev) {
     }
 
     switch (ev.data) {
-        case PAUSE_PLAY: 
+        case PLAY_PAUSE: 
             if (window.dzPlayer.isPlaying()) {
                 dzPlayer.control.pause();
             } else {
