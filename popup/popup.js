@@ -1,18 +1,14 @@
 const DEEZER_CONTROL_HOTKEYS = 'DEEZER_CONTROL_HOTKEYS';
+const defaultLang = 'en-US';
 
 document.addEventListener('DOMContentLoaded', () => {
     'use strict';
+    initLang(navigator.language);
+    loadStoredData();
+    initEvents();
+});
 
-    let playPauseHotkeyInput = document.getElementById('play_pause_hotkey');
-    let previousSongHotkeyInput = document.getElementById('previous_hotkey');
-    let nextSongHotkeyInput = document.getElementById('next_hotkey');
-
-    loadStoredData(
-        playPauseHotkeyInput,
-        previousSongHotkeyInput,
-        nextSongHotkeyInput
-    );
-
+function initEvents() {
     let bufferPlayPause = [];
     let bufferPrevious = [];
     let bufferNext = [];
@@ -21,9 +17,39 @@ document.addEventListener('DOMContentLoaded', () => {
     document.getElementById('previous_hotkey').addEventListener('keydown', listenKeyDown.bind({ buffer: bufferPrevious }));
     document.getElementById('next_hotkey').addEventListener('keydown', listenKeyDown.bind({ buffer: bufferNext }));
     document.getElementById('save_button').addEventListener('click', saveHotkeys.bind({ bufferPlayPause, bufferPrevious, bufferNext }));
-});
+}
 
-function loadStoredData(playPauseHotkeyInput, previousSongHotkeyInput, nextSongHotkeyInput) {
+function initLang(lang) {
+    loadLang(lang).then(lang => {
+        renderLabels(lang);
+    }).catch(err => {
+        initLangDefault();
+    });
+}
+
+function initLangDefault() {
+    loadLang(defaultLang).then((lang) => {
+        renderLabels(lang);
+    });
+}
+
+function renderLabels(lang) {
+    document.getElementById('play_pause_label').innerHTML = lang.playPauseLabel;
+    document.getElementById('previous_song_label').innerHTML = lang.previousSongLabel;
+    document.getElementById('next_song_label').innerHTML = lang.nextSongLabel;
+    document.getElementById('save_button').innerHTML = lang.saveButtonLabel;
+}
+
+async function loadLang(param) {
+    const response = await fetch(`../lang/${param}.json`);
+    return await response.json();
+}
+
+function loadStoredData() {
+    let playPauseHotkeyInput = document.getElementById('play_pause_hotkey');
+    let previousSongHotkeyInput = document.getElementById('previous_hotkey');
+    let nextSongHotkeyInput = document.getElementById('next_hotkey');
+
     chrome.storage.sync.get([DEEZER_CONTROL_HOTKEYS], function(result) {
         if (result) {
             playPauseHotkeyInput.value = result[DEEZER_CONTROL_HOTKEYS].playPause.inputVal;
