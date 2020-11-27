@@ -2,7 +2,7 @@ const DEEZER_CONTROL_HOTKEYS = 'DEEZER_CONTROL_HOTKEYS';
 
 chrome.runtime.onMessage.addListener((msg => {
     chrome.storage.sync.get([DEEZER_CONTROL_HOTKEYS], function(result) {
-        if (!result) {
+        if (!result[DEEZER_CONTROL_HOTKEYS]) {
             return;
         }
 

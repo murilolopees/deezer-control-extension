@@ -1,18 +1,18 @@
 const DEEZER_CONTROL_HOTKEYS = 'DEEZER_CONTROL_HOTKEYS';
 const defaultLang = 'en-US';
 
-document.addEventListener('DOMContentLoaded', () => {
+document.addEventListener('DOMContentLoaded', async () => {
     'use strict';
-    initLang(navigator.language);
-    loadStoredData();
-    initEvents();
-});
 
-function initEvents() {
     let bufferPlayPause = [];
     let bufferPrevious = [];
     let bufferNext = [];
-    
+
+    initLang(navigator.language);
+    loadStoredData(bufferPlayPause, bufferPrevious, bufferNext);
+});
+
+function initEvents(bufferPlayPause, bufferPrevious, bufferNext) {
     document.getElementById('play_pause_hotkey').addEventListener('keydown', listenKeyDown.bind({ buffer: bufferPlayPause }));
     document.getElementById('previous_hotkey').addEventListener('keydown', listenKeyDown.bind({ buffer: bufferPrevious }));
     document.getElementById('next_hotkey').addEventListener('keydown', listenKeyDown.bind({ buffer: bufferNext }));
@@ -45,17 +45,40 @@ async function loadLang(param) {
     return await response.json();
 }
 
-function loadStoredData() {
+function loadStoredData(bufferPlayPause, bufferPrevious, bufferNext) {
     let playPauseHotkeyInput = document.getElementById('play_pause_hotkey');
     let previousSongHotkeyInput = document.getElementById('previous_hotkey');
     let nextSongHotkeyInput = document.getElementById('next_hotkey');
 
-    chrome.storage.sync.get([DEEZER_CONTROL_HOTKEYS], function(result) {
-        if (result) {
+    return chrome.storage.sync.get([DEEZER_CONTROL_HOTKEYS], function(result) {
+        if (result[DEEZER_CONTROL_HOTKEYS]) {
             playPauseHotkeyInput.value = result[DEEZER_CONTROL_HOTKEYS].playPause.inputVal;
             previousSongHotkeyInput.value = result[DEEZER_CONTROL_HOTKEYS].previousSong.inputVal;
             nextSongHotkeyInput.value = result[DEEZER_CONTROL_HOTKEYS].nextSong.inputVal;
+            
+            bufferPlayPause = result[DEEZER_CONTROL_HOTKEYS].playPause.keyCodes.map((eachKey) => {
+                return {
+                    key: eachKey.key,
+                    keyCode: eachKey.keyCode,
+                }
+            });
+    
+            bufferPrevious = result[DEEZER_CONTROL_HOTKEYS].previousSong.keyCodes.map((eachKey) => {
+                return {
+                    key: eachKey.key,
+                    keyCode: eachKey.keyCode,
+                }
+            });
+    
+            bufferNext = result[DEEZER_CONTROL_HOTKEYS].nextSong.keyCodes.map((eachKey) => {
+                return {
+                    key: eachKey.key,
+                    keyCode: eachKey.keyCode,
+                }
+            });
         }
+
+        initEvents(bufferPlayPause, bufferPrevious, bufferNext);
     });
 }
 
@@ -105,9 +128,9 @@ function saveHotkeys() {
 
     const data = {
         DEEZER_CONTROL_HOTKEYS: {
-            playPause: { keyCodes: getKeyCodes(this.bufferPlayPause), inputVal: playPauseHotkeyVal },
-            previousSong: { keyCodes: getKeyCodes(this.bufferPrevious), inputVal: previousSongHotkeyVal },
-            nextSong: { keyCodes: getKeyCodes(this.bufferNext), inputVal: nextSongHotkeyVal },
+            playPause: { keyCodes: this.bufferPlayPause, inputVal: playPauseHotkeyVal },
+            previousSong: { keyCodes: this.bufferPrevious, inputVal: previousSongHotkeyVal },
+            nextSong: { keyCodes: this.bufferNext, inputVal: nextSongHotkeyVal },
         }
     }
 
@@ -122,13 +145,4 @@ function getInputText(buffer) {
     };
     
     return buffer.reduce(reducer, '').slice(0, -3);
-}
-
-function getKeyCodes(buffer) {
-    const reducer = (keyCodes, currentValue) => {
-        keyCodes.push(currentValue.keyCode);
-        return keyCodes;
-    };
-
-    return buffer.reduce(reducer, []);
 }

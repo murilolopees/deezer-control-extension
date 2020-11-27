@@ -9,7 +9,7 @@
           ],
           "js": ["main.js"],
           "run_at": "document_end",
-          "all_frames": true
+          "all_frames": false
         }
     ],
     "background": {
@@ -17,7 +17,7 @@
       "persistent": false
     },
     "web_accessible_resources": [
-      "scripts/observer.js"
+      "scripts/dz_extension_observer.js"
     ],
     "permissions": [
       "*://*.deezer.com/",
