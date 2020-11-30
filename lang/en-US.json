@@ -2,5 +2,6 @@
     "playPauseLabel": "Play/Pause",
     "nextSongLabel": "Next song hotkey",
     "previousSongLabel": "Previous song hotkey",
-    "saveButtonLabel": "Save"
+    "saveButtonLabel": "Save",
+    "validationError": "Fill in hotkeys before saving!"
 }

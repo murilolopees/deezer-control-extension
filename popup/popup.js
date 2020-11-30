@@ -1,6 +1,8 @@
 const DEEZER_CONTROL_HOTKEYS = 'DEEZER_CONTROL_HOTKEYS';
 const defaultLang = 'en-US';
 
+langLoaded = null;
+
 document.addEventListener('DOMContentLoaded', async () => {
     'use strict';
 
@@ -21,6 +23,7 @@ function initEvents(bufferPlayPause, bufferPrevious, bufferNext) {
 
 function initLang(lang) {
     loadLang(lang).then(lang => {
+        langLoaded = lang;
         renderLabels(lang);
     }).catch(err => {
         initLangDefault();
@@ -29,6 +32,7 @@ function initLang(lang) {
 
 function initLangDefault() {
     loadLang(defaultLang).then((lang) => {
+        langLoaded = lang;
         renderLabels(lang);
     });
 }
@@ -121,8 +125,8 @@ function saveHotkeys() {
     const previousSongHotkeyVal = document.getElementById('previous_hotkey').value;
     const nextSongHotkeyVal = document.getElementById('next_hotkey').value;
 
-    if (!playPauseHotkeyVal && !previousSongVal && !nextSongVal) {
-        alert('Preencha as hotkeys!');
+    if (!playPauseHotkeyVal && !previousSongHotkeyVal && !nextSongHotkeyVal) {
+        alert(langLoaded.validationError);
         return;
     }
 
